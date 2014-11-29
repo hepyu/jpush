@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd ">
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl"
+			value="jdbc:mysql://0.0.0.0/tpush?user=tpush&amp;password=password&amp;useUnicode=true" />
+		<property name="user">
+			<value>tpush</value>
+		</property>
+		<property name="password">
+			<value>dGirClQJj23f</value>
+		</property>
+		<property name="initialPoolSize">
+			<value>5</value>
+		</property>
+		<property name="minPoolSize">
+			<value>10</value>
+		</property>
+		<property name="maxPoolSize">
+			<value>100</value>
+		</property>
+		<property name="maxIdleTime">
+			<value>180</value>
+		</property>
+		<property name="maxStatements">
+			<value>0</value>
+		</property>
+		<property name="idleConnectionTestPeriod">
+			<value>60</value>
+		</property>
+		<property name="acquireIncrement">
+			<value>5</value>
+		</property>
+		<property name="automaticTestTable">
+			<value>c3p0_test</value>
+		</property>
+	</bean>
+
+	<bean id="MySQLMessagePersistenceDBPool"
+		class="com.tongbupan.tpush.message.persistence.dao.mysql.MySQLMessagePersistenceDBPool">
+		<property name="ds">
+			<ref bean="dataSource" />
+		</property>
+	</bean>
+
+	<!-- dao injection -->
+	<bean name="IMessagePersistenceDao"
+		class="com.tongbupan.tpush.message.persistence.dao.mysql.impl.MySQLMessagePersistenceDaoImpl"></bean>
+
+	<!-- handler injection -->
+	<bean name="IMessagePersistenceHandler"
+		class="com.tongbupan.tpush.message.persistence.handler.impl.MessagePersistenceHandlerImpl">
+		<property name="messagePersistenceDao" ref="IMessagePersistenceDao"></property>
+	</bean>
+
+</beans>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd ">
+
+	<!-- use for server pubsub -->
+	<bean name="clientTPushRedisParam" class="com.emacle.foundation.param.RedisParam">
+		<property name="maxActive" value="20000" />
+		<property name="maxWait" value="20000" />
+		<property name="maxIdle" value="5000" />
+		<property name="host" value="0.0.0.0" />
+		<property name="port" value="6380" />
+	</bean>
+
+	<bean name="TPushClientParam" class="com.tongbupan.tpush.client.param.TPushClientParam">
+		<property name="batchSubmitCount" value="1000"></property>
+		<property name="batchSubmitReTryCount" value="3"></property>
+		<property name="batchSleepBetweenReTry" value="10"></property>
+		<property name="batchSleepBeforeNextBatch" value="5"></property>
+		<property name="threadCount" value="10"></property>
+		
+		<property name="topicExpireTime" value="600"></property>
+	</bean>
+
+	<bean name="TopicPartitioner" class="com.tongbupan.tpush.partitioner.DefaultPartitioner">
+		<property name="channelNum" value="10"></property>
+	</bean>
+
+</beans>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd ">
+
+	<!-- use for server pubsub -->
+	<bean name="serverPubsubRedisParam" class="com.tongbupan.tpush.param.TPushServerRedisParam">
+		<property name="pushMaxActive" value="20000" />
+		<property name="pushMaxWait" value="20000" />
+		<property name="pushMaxIdle" value="5000" />
+		<property name="notifyMaxActive" value="20000" />
+		<property name="notifyMaxWait" value="20000" />
+		<property name="notifyMaxIdle" value="5000" />
+		<property name="host" value="0.0.0.0" />
+		<property name="port" value="6380" />
+		<property name="openPush" value="true" />
+		<property name="openNotify" value="true" />
+		<property name="sendMsgRetryCount" value="3" />
+		<property name="sendMsgRetrySleepTime" value="5"></property>
+	</bean>
+
+	<bean name="tpushParam" class="com.tongbupan.tpush.param.TPushServerParam">
+		<!-- topicExpireTime unit by second -->
+		<property name="topicExpireTime" value="1800"></property>
+
+		<property name="historyMessagePushCount" value="1000"></property>
+		<property name="pusherWorkerNum" value="10"></property>
+
+		<!-- messageExpireTime unit by second -->
+		<property name="messageExpireTime" value="60"></property>
+	</bean>
+
+	<!-- handlers -->
+	<bean name="IPacketNoticeHandler" class="com.tongbupan.tpush.handler.impl.PacketNoticeHandler">
+		<property name="messageSender" ref="MessageSenderNotSingle"></property>
+	</bean>
+
+	<!-- tpush -->
+	<bean name="NotifierFactory"
+		class="com.tongbupan.tpush.notifier.RedisPubSubNotifierFactory"
+		init-method="init">
+		<property name="serverPubsubRedisParam" ref="serverPubsubRedisParam"></property>
+	</bean>
+
+	<bean name="Pusher" class="com.tongbupan.tpush.pusher.DefaultPusher"
+		scope="prototype">
+		<property name="messageSender" ref="MessageSenderNotSingle"></property>
+	</bean>
+	<bean name="MessageSenderNotSingle" class="com.tongbupan.tpush.message.DefaultMessageSender"
+		scope="prototype">
+	</bean>
+
+	<bean name="MessageSender" class="com.tongbupan.tpush.message.DefaultMessageSender">
+	</bean>
+
+
+</beans>
+

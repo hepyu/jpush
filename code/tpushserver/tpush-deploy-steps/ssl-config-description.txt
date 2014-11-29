@@ -1,0 +1,132 @@
+在目标jetty目录下新建ssl目录，进入ssl目录后执行如下步骤：
+
+(1).Generating Keys and Certificates with JDK keytool
+   
+   1.1.The following command generates a key pair and certificate directly into a keystore:
+
+      command:
+      keytool -keystore keystore -storepass 1toc1xfd1vfv1uuq1xfb1t331xfr1uvg1vgz1xfp1toi -keypass 1toc1xfd1vfv1uuq1xfb1t331xfr1uvg1vgz1xfp1toi -alias jetty -genkey -keyalg RSA -validity 36500
+   
+      What is your first and last name?
+      [Unknown]:  emacle
+      What is the name of your organizational unit?
+      [Unknown]:  emacle
+      What is the name of your organization?
+      [Unknown]:  emacle
+      What is the name of your City or Locality?
+      [Unknown]:  beijing
+      What is the name of your State or Province?
+      [Unknown]:  beijing
+      What is the two-letter country code for this unit?
+      [Unknown]:  cn
+      Is CN=jetty.eclipse.org, OU=Jetty, O=Mort Bay Consulting Pty. Ltd.,
+      L=Unknown, ST=Unknown, C=Unknown correct?
+      [no]:  yes
+ 
+      Enter key password for <jetty>
+            (RETURN if same as keystore password):  1toc1xfd1vfv1uuq1xfb1t331xfr1uvg1vgz1xfp1toi
+
+
+(2).Generating Keys and Certificates with OpenSSL
+   2.1. The following command generates a key pair in the file jetty.key
+
+      command:
+      openssl genrsa -des3 -out jetty.key
+      
+      steps:
+      Enter pass phrase for jetty.key:
+      Verifying - Enter pass phrase for jetty.key: Verifying
+
+   2.2. The following command generates a certificate for the key into the file jetty.crt
+      
+      command:
+      openssl req -new -x509 -key jetty.key -out jetty.crt
+
+      steps:
+      Enter pass phrase for jetty.key: Verifying
+      Country Name (2 letter code) [AU]:cn
+      State or Province Name (full name) [Some-State]:beijing
+      Locality Name (eg, city) []:beijing
+      Organization Name (eg, company) [Internet Widgits Pty Ltd]:emacle
+      Organizational Unit Name (eg, section) []:emacle
+      Common Name (e.g. server FQDN or YOUR name) []:emacle
+      Email Address []:
+
+(3). Using Keys and Certificates from Other Sources
+   3.1. Generating a CSR from keytool
+      The following command generates the file jetty.csr using keytool for a key/cert already in the keystore:
+
+      command:
+      keytool -certreq -alias jetty -keystore keystore -file jetty.csr
+
+      steps:
+      Enter keystore password: 1toc1xfd1vfv1uuq1xfb1t331xfr1uvg1vgz1xfp1toi
+
+   3.2. Generating a CSR from OpenSSL
+      The following command generates the file jetty.csr using OpenSSL for a key in the file jetty.key:
+      
+      command:
+      openssl req -new -key jetty.key -out jetty.csr
+
+      steps:
+      Enter pass phrase for jetty.key: Verifying
+      Country Name (2 letter code) [AU]:cn
+      State or Province Name (full name) [Some-State]:beijing
+      Locality Name (eg, city) []:beijing
+      Organization Name (eg, company) [Internet Widgits Pty Ltd]:emacle
+      Organizational Unit Name (eg, section) []:emacle
+      Common Name (e.g. server FQDN or YOUR name) []:emacle
+      Email Address []:
+
+      Please enter the following 'extra' attributes
+      to be sent with your certificate request
+      A challenge password []:Verifying
+      An optional company name []:emacle
+
+
+(4). Loading Certificates with keytool
+   4.1.The following command loads a PEM encoded certificate in the jetty.crt file into a JSSE keystore:
+      
+      command:
+      keytool -import -alias jetty -file jetty.crt -trustcacerts   
+      
+      steps:
+      Enter keystore password: 1toc1xfd1vfv1uuq1xfb1t331xfr1uvg1vgz1xfp1toi
+      Re-enter new password: 1toc1xfd1vfv1uuq1xfb1t331xfr1uvg1vgz1xfp1toi
+
+      Trust this certificate? [no]:  yes
+      Certificate was added to keystore
+
+(5). Loading Keys and Certificates via PKCS12
+   5.1. The following OpenSSL command combines the keys in jetty.key and the certificate in the jetty.crt file into the jetty.pkcs12 file:
+      
+      command:
+      openssl pkcs12 -inkey jetty.key -in jetty.crt -export -out jetty.pkcs12
+
+      steps:
+      Enter pass phrase for jetty.key:
+      Enter Export Password:
+      Verifying - Enter Export Password: Verifying
+
+   5.2.generate password:
+    
+      commond:
+      java -cp $JETTY_HOME/lib/jetty-util-8.1.3.v20120416.jar org.eclipse.jetty.util.security.Password emacletpush emacletpush
+
+      steps:
+      OBF:1toc1xfd1vfv1uuq1xfb1t331xfr1uvg1vgz1xfp1toi
+      MD5:541a4815fb686cb59accef165c1a7aa8
+      CRYPT:emTMQV/9fY8lY
+
+(7).config ssl:
+    /jetty/etc/jetty-ssl.xml:
+    <New id="sslContextFactory" class="org.eclipse.jetty.http.ssl.SslContextFactory">
+        <Set name="KeyStore"><Property name="jetty.home" default="." />/ssl/keystore</Set>
+        <Set name="KeyStorePassword">1toc1xfd1vfv1uuq1xfb1t331xfr1uvg1vgz1xfp1toi</Set>
+        <Set name="KeyManagerPassword">1toc1xfd1vfv1uuq1xfb1t331xfr1uvg1vgz1xfp1toi</Set>
+        <Set name="TrustStore"><Property name="jetty.home" default="." />/ssl/keystore</Set>
+        <Set name="TrustStorePassword">1toc1xfd1vfv1uuq1xfb1t331xfr1uvg1vgz1xfp1toi</Set>
+    </New>
+   
+    修改jetty－ssl.xml,改为本目录中jetty-ssl.xml的形式。
+   

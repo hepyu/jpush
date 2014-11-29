@@ -1,0 +1,47 @@
+tpush的正常运行需要部署jetty-tpush插件和tpush-web.
+主要分4大步骤：
+1.部署tpush的jetty插件:jetty-tpush
+2.部署tpush的web服务器
+3.修改jetty的配置文件
+4.启动服务
+5.此步是可选步骤：启用ssl通道
+
+1.部署jetty-tpush:
+1.1.从公司的maven仓库中下载jetty-tpush的jar包:jetty-tpush-0.0.1-SNAPSHOT.jar
+1.2.将jar包放到jetty的如下目录:jetty/lib/ext
+
+2.部署tpush的web服务器
+2.1.从svn上下载tpush项目，路径：code/webpush/trunk
+2.2.根据实际情况，修改部署的自动化脚本deploy.sh的如下部分：
+    #----production deploy start----#
+    function production_env()
+    {
+    REMOTE_PORT="22";      #要部署的目标机器的ssh端口
+    REMOTE_USER="emacle";  #要部署的目标机器的登陆名
+    REMOTE_ADDR="0.0.0.0";    #要部署的目标机器的ip
+    REMOTE_BASE="/home/emacle/jetty_8.1.3_tpush/webapps";   #要部署的目标路径
+    }
+2.3.在tpush-project的目录下执行部署脚本deploy.sh,使用如下命令:
+    sh ./deploy.sh --type production
+    然后根据提示输入目标部署机器的密码
+2.4.登陆目标部署机器，进入jetty/webbapps目录，修改tpushserver-version.jar的目录名为tpushserver.
+2.5.将本目录下的tpushserver.xml传到jetty/contexts下
+
+3.修改jetty的配置文件，修改默认端口为80端口：
+  修改jetty/etc/jetty.xml，将默认端口改为80.
+
+4.启动服务:
+4.1.在目标机器建立日志目录：/mnt/logs
+4.2.执行启动命令
+    nohup java -XX:+PrintGC -XX:+PrintGCDetails -Xloggc:./tpush_gc.log -Xmx8192M -Xms8192M -Xmn3072M -XX:PermSize=64M -XX:MaxPermSize=64M -jar -server start.jar etc/jetty-ssl.xml > /dev/null 2>&1 &
+  请根据实际情况修改参数.
+4.3.观察日志，确认是否启动成功，日志正常，完成部署。
+
+5.启用ssl加密通道:
+5.1.根据本目录的“ssl配置步骤说明”进行配置
+5.2.修改目标机器的jetty/etc/jetty-ssl.xml,可以用本目录下的jetty-ssl.xml的内容替换
+5.3.根据4进行重新启动,观察日志，会发现多了ssl的443端口，确认日志正常后，完成部署。
+  
+
+
+

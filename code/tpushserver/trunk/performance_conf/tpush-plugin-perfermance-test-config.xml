@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd ">
+
+	<!-- use for server pubsub -->
+	<bean name="PerfermanceTestParamBean"
+		class="com.tongbupan.tpush.plugin.perfermancetest.PerfermanceTestParamBean">
+		<property name="threadCount" value="1"></property>
+		<property name="messageSize" value="1000"></property>
+		<property name="runtime" value="5"></property>
+		<property name="connCount" value="10000"></property>
+		<property name="interval" value="20"></property>
+		<property name="openThisPlug" value="true"></property>
+		<property name="tpush_server_websocket_conn_count" value="10000"></property>
+		<property name="current_test_client_flag_list">
+			<list>
+				<value>a</value>
+			</list>
+		</property>
+	</bean>
+
+</beans>
+
